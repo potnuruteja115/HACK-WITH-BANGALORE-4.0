@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Assets/hack-with-bangalore-banner.png" alt="Hack With Bangalore 4.0 Banner" width="100%">
+  <img src="Assets/Banner-devnovate.png" alt="Hack With Bangalore 4.0 Banner" width="100%">
 </p>
 
 ---
