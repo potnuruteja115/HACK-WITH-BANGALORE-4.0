@@ -58,7 +58,7 @@ flowchart TD
     end
 
     subgraph Hindsight["Hindsight Memory Platform (Vectorize)"]
-        HS_Bank[("Memory Bank: 'Script'")]
+        HS_Bank[("Memory Bank: 'nikhil'")]
         HS_Retain["retain(): Notes, Promises, Debriefs, Tags"]
         HS_Recall["recall(): Semantic & Temporal Queries"]
         HS_Reflect["reflect(): Outcome Synthesis & Tactics"]
@@ -87,7 +87,6 @@ flowchart TD
     Groq_LLM -->|"Extracted Commitments"| Route_Debrief
     Route_Debrief -->|"2. retain() debrief notes & commitments"| HS_Retain
     HS_Retain --> HS_Bank
-
 
 # Foresight: Persistent Relationship Intelligence
 
