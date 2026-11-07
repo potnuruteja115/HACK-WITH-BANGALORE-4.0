@@ -5,10 +5,10 @@
 ---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-Client%20%26%20API-000000?style=for-the-badge&logo=nextdotjs&logoColor=white">
-  <img src="https://img.shields.io/badge/Groq-Fast%20Inference-F55036?style=for-the-badge">
-  <img src="https://img.shields.io/badge/Vectorize-Hindsight%20Memory-0052FF?style=for-the-badge">
-  <img src="https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white">
+  <img src="[https://img.shields.io/badge/Next.js-Client%20%26%20API-000000?style=for-the-badge&logo=nextdotjs&logoColor=white](https://img.shields.io/badge/Next.js-Client%20%26%20API-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)">
+  <img src="[https://img.shields.io/badge/Groq-Fast%20Inference-F55036?style=for-the-badge](https://img.shields.io/badge/Groq-Fast%20Inference-F55036?style=for-the-badge)">
+  <img src="[https://img.shields.io/badge/Vectorize-Hindsight%20Memory-0052FF?style=for-the-badge](https://img.shields.io/badge/Vectorize-Hindsight%20Memory-0052FF?style=for-the-badge)">
+  <img src="[https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white](https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)">
 </p>
 
 <p align="center">
@@ -58,7 +58,7 @@ flowchart TD
     end
 
     subgraph Hindsight["Hindsight Memory Platform (Vectorize)"]
-        HS_Bank[("Memory Bank: 'nikhil'")]
+        HS_Bank[("Memory Bank: 'Script'")]
         HS_Retain["retain(): Notes, Promises, Debriefs, Tags"]
         HS_Recall["recall(): Semantic & Temporal Queries"]
         HS_Reflect["reflect(): Outcome Synthesis & Tactics"]
