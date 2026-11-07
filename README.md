@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <b>🚀 <a href="#">Live Demo (Coming Soon)</a></b> • <b><a href="#setup-and-installation">Installation</a></b> • <b><a href="#architecture-overview">Architecture</a></b>
+  <b> • <b><a href="#setup-and-installation">Installation</a></b> • <b><a href="#architecture-overview">Architecture</a></b>
 </p>
 
 ---
