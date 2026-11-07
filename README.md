@@ -11,6 +11,7 @@
   <img src="[https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white](https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)">
 </p>
 
+# Foresight: Persistent Relationship Intelligence
 <p align="center">
   <b>  <b><a href="#setup-and-installation">Installation</a></b> • <b><a href="#architecture-overview">Architecture</a></b>
 </p>
