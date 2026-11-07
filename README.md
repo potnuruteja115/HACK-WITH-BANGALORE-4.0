@@ -17,10 +17,6 @@
 
 ---
 
-# Foresight: Persistent Relationship Intelligence
-
-> An executive meeting preparation system powered by **Vectorize Hindsight** persistent memory banks and **Groq** high-speed inference. Never walk into a meeting having forgotten a past commitment, unresolved objection, or shifting stakeholder sentiment.
-
 ## 📑 Table of Contents
 
 - [Architecture Overview](#architecture-overview)
