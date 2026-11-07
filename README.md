@@ -11,7 +11,7 @@
   <img src="[https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white](https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)">
 </p>
 
-<h1 align="center">Foresight: Persistent Relationship Intelligence</h1>
+<h1 align="center">Foresight: Persistent Relationship Intelligence AI Assistant</h1>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
