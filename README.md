@@ -1,3 +1,94 @@
+<p align="center">
+  <img src="Assets/Banner-devnovate.png" alt="Devnovate Hackathon Banner" width="100%">
+</p>
+
+---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-Client%20%26%20API-000000?style=for-the-badge&logo=nextdotjs&logoColor=white">
+  <img src="https://img.shields.io/badge/Groq-Fast%20Inference-F55036?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Vectorize-Hindsight%20Memory-0052FF?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Node.js-v18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white">
+</p>
+
+<p align="center">
+  <b>🚀 <a href="#">Live Demo (Coming Soon)</a></b> • <b><a href="#setup-and-installation">Installation</a></b> • <b><a href="#architecture-overview">Architecture</a></b>
+</p>
+
+---
+
+# Foresight: Persistent Relationship Intelligence
+
+> An executive meeting preparation system powered by **Vectorize Hindsight** persistent memory banks and **Groq** high-speed inference. Never walk into a meeting having forgotten a past commitment, unresolved objection, or shifting stakeholder sentiment.
+
+## 📑 Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Memory Retain and Recall Lifecycle](#memory-retain-and-recall-lifecycle)
+- [Core Capabilities](#core-capabilities)
+- [Setup and Installation](#setup-and-installation)
+- [Error Handling Architecture](#error-handling-architecture)
+- [Running the Automated Test Suite](#running-the-automated-test-suite)
+- [Design System: Claymorphism](#design-system-claymorphism)
+
+---
+
+## Architecture Overview
+
+Foresight sits on top of two core backbones:
+1. **Vectorize Hindsight (`@vectorize-io/hindsight-client`)**: Acts as the agent's persistent hippocampus, storing structured facts, temporal metadata, entity relationships, and synthesis patterns across discussions.
+2. **Groq (`groq-sdk`)**: Provides low-latency reasoning and synthesis using open-weight models (`openai/gpt-oss-120b`).
+
+```mermaid
+flowchart TD
+    subgraph Client["Next.js Claymorphism Client (Browser)"]
+        UI_Home["Landing & Roster (/app)"]
+        UI_Overview["Portfolio Risk Overview (/overview)"]
+        UI_Briefing["Pre-Meeting Briefing & Compare"]
+        UI_Debrief["Post-Meeting Debrief Modal"]
+        UI_Curve["Longitudinal Learning Curve"]
+    end
+
+    subgraph API["Next.js App Router Backend (/api)"]
+        Route_Overview["/api/overview"]
+        Route_Briefing["/api/briefing"]
+        Route_Debrief["/api/debrief"]
+        Route_Memory["/api/memory"]
+        Route_Curve["/api/learning-curve"]
+    end
+
+    subgraph Hindsight["Hindsight Memory Platform (Vectorize)"]
+        HS_Bank[("Memory Bank: 'Script'")]
+        HS_Retain["retain(): Notes, Promises, Debriefs, Tags"]
+        HS_Recall["recall(): Semantic & Temporal Queries"]
+        HS_Reflect["reflect(): Outcome Synthesis & Tactics"]
+    end
+
+    subgraph Groq["Groq Cloud Inference"]
+        Groq_LLM["Model: gpt-oss-120b\n(Briefing Synthesis & Promise Extraction)"]
+    end
+
+    %% Flows
+    UI_Briefing -->|"POST {contactId, agenda, useMemory}"| Route_Briefing
+    UI_Debrief -->|"POST {contactId, rawNotes, outcome}"| Route_Debrief
+    UI_Overview -->|"GET"| Route_Overview
+    UI_Curve -->|"GET"| Route_Curve
+
+    Route_Briefing -->|"1. recall() past facts & commitments"| HS_Recall
+    Route_Briefing -->|"2. reflect() advanced vs stalled tactics"| HS_Reflect
+    HS_Recall --> HS_Bank
+    HS_Reflect --> HS_Bank
+
+    Route_Briefing -->|"3. Synthesize briefing with memory facts"| Groq_LLM
+    Groq_LLM -->|"Structured Briefing JSON"| Route_Briefing
+    Route_Briefing -->|"Grounded Provenance Linking"| UI_Briefing
+
+    Route_Debrief -->|"1. Extract promises & due dates"| Groq_LLM
+    Groq_LLM -->|"Extracted Commitments"| Route_Debrief
+    Route_Debrief -->|"2. retain() debrief notes & commitments"| HS_Retain
+    HS_Retain --> HS_Bank
+
+
 # Foresight: Persistent Relationship Intelligence
 
 > An executive meeting preparation system powered by **Vectorize Hindsight** persistent memory banks and **Groq** high-speed inference. Never walk into a meeting having forgotten a past commitment, unresolved objection, or shifting stakeholder sentiment.
