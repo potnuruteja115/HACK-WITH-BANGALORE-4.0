@@ -51,52 +51,67 @@ Foresight sits on top of two core backbones:
 2. **Groq (`groq-sdk`)**: Provides low-latency reasoning and synthesis using open-weight models (`openai/gpt-oss-120b`).
 
 ```mermaid
-flowchart TD
+flowchart LR
     subgraph Client["Next.js Claymorphism Client (Browser)"]
+        direction TB
         UI_Home["Landing & Roster (/app)"]
         UI_Overview["Portfolio Risk Overview (/overview)"]
+        UI_Curve["Longitudinal Learning Curve"]
         UI_Briefing["Pre-Meeting Briefing & Compare"]
         UI_Debrief["Post-Meeting Debrief Modal"]
-        UI_Curve["Longitudinal Learning Curve"]
     end
 
     subgraph API["Next.js App Router Backend (/api)"]
+        direction TB
+        Route_Memory["/api/memory"]
         Route_Overview["/api/overview"]
+        Route_Curve["/api/learning-curve"]
         Route_Briefing["/api/briefing"]
         Route_Debrief["/api/debrief"]
-        Route_Memory["/api/memory"]
-        Route_Curve["/api/learning-curve"]
+    end
+
+    subgraph Services["Orchestration Layer"]
+        direction TB
+        Insights_Orch["Insights Service<br/>(risk ranking & learning curve)"]
+        Briefing_Orch["Briefing Orchestrator<br/>(recall + reflect + synthesis<br/>+ provenance linking)"]
+        Cache[("Briefing Cache<br/>(contactId + agenda hash)")]
+        Debrief_Orch["Debrief Orchestrator<br/>(extract promises + retain)"]
     end
 
     subgraph Hindsight["Hindsight Memory Platform (Vectorize)"]
+        direction TB
+        HS_Recall["recall():<br/>Semantic & Temporal Queries"]
+        HS_Reflect["reflect():<br/>Outcome Synthesis & Tactics"]
+        HS_Retain["retain():<br/>Notes, Promises, Debriefs, Tags"]
         HS_Bank[("Memory Bank: 'Script'")]
-        HS_Retain["retain(): Notes, Promises, Debriefs, Tags"]
-        HS_Recall["recall(): Semantic & Temporal Queries"]
-        HS_Reflect["reflect(): Outcome Synthesis & Tactics"]
     end
 
     subgraph Groq["Groq Cloud Inference"]
-        Groq_LLM["Model: gpt-oss-120b\n(Briefing Synthesis & Promise Extraction)"]
+        Groq_LLM["Model: gpt-oss-120b<br/>(Briefing Synthesis & Promise Extraction)"]
     end
 
-    %% Flows
-    UI_Briefing -->|"POST {contactId, agenda, useMemory}"| Route_Briefing
-    UI_Debrief -->|"POST {contactId, rawNotes, outcome}"| Route_Debrief
+    UI_Home -->|"GET"| Route_Memory
     UI_Overview -->|"GET"| Route_Overview
     UI_Curve -->|"GET"| Route_Curve
+    UI_Briefing -->|"POST"| Route_Briefing
+    UI_Debrief -->|"POST"| Route_Debrief
 
-    Route_Briefing -->|"1. recall() past facts & commitments"| HS_Recall
-    Route_Briefing -->|"2. reflect() advanced vs stalled tactics"| HS_Reflect
+    Route_Memory --> Insights_Orch
+    Route_Overview --> Insights_Orch
+    Route_Curve --> Insights_Orch
+    Route_Briefing --> Briefing_Orch
+    Route_Debrief --> Debrief_Orch
+
+    Briefing_Orch <--> Cache
+    Insights_Orch --> HS_Recall
+    Briefing_Orch -->|"1. recall()"| HS_Recall
+    Briefing_Orch -->|"2. reflect()"| HS_Reflect
+    Debrief_Orch -->|"2. retain()"| HS_Retain
+    Briefing_Orch <-->|"3. Synthesize"| Groq_LLM
+    Debrief_Orch <-->|"1. Extract"| Groq_LLM
+
     HS_Recall --> HS_Bank
     HS_Reflect --> HS_Bank
-
-    Route_Briefing -->|"3. Synthesize briefing with memory facts"| Groq_LLM
-    Groq_LLM -->|"Structured Briefing JSON"| Route_Briefing
-    Route_Briefing -->|"Grounded Provenance Linking"| UI_Briefing
-
-    Route_Debrief -->|"1. Extract promises & due dates"| Groq_LLM
-    Groq_LLM -->|"Extracted Commitments"| Route_Debrief
-    Route_Debrief -->|"2. retain() debrief notes & commitments"| HS_Retain
     HS_Retain --> HS_Bank
 ```
 
@@ -111,17 +126,35 @@ sequenceDiagram
     actor User as Account Executive
     participant App as Debrief UI Modal
     participant API as /api/debrief
+    participant Svc as Debrief Orchestrator
     participant Groq as Groq (gpt-oss-120b)
     participant HS as Hindsight Bank ('Script')
+    participant Cache as Briefing Cache
 
     User->>App: Paste raw meeting notes & select outcome (advanced/stalled/lost_ground)
     App->>API: POST notes, date, outcome, contactId
-    API->>Groq: Extract explicit promises (ours & theirs) and due dates
-    Groq-->>API: Extracted commitments JSON
-    API->>HS: retain() raw debrief note with tags: [contact, outcome, type:debrief]
-    API->>HS: retain() individual commitments with tags: [type:promise, outcome]
+    API->>API: Validate payload (400 if contactId or notes missing)
+    API->>Svc: Hand off validated debrief
+    Svc->>Groq: Extract explicit promises (ours & theirs) and due dates
+    Groq-->>Svc: Extracted commitments JSON
+
+    par Retain in parallel
+        Svc->>HS: retain() raw debrief note with tags: [contact, outcome, type:debrief]
+    and
+        Svc->>HS: retain() individual commitments with tags: [type:promise, outcome]
+    end
+
+    HS-->>Svc: Stored document IDs
+    Svc->>Cache: Invalidate cached briefings for contact
+    Svc-->>API: Stored confirmation summary
     API-->>App: Return stored confirmation summary
     App-->>User: Display stored memory facts and extracted promises
+
+    alt Groq or Hindsight failure
+        Svc-->>API: {service, statusCode, error}
+        API-->>App: Error payload
+        App-->>User: Inline error in modal, notes preserved, retry available
+    end
 ```
 
 ### 2. Recall Flow (Before Upcoming Meetings)
@@ -131,19 +164,37 @@ sequenceDiagram
     actor User as Account Executive
     participant App as Briefing UI (/app)
     participant API as /api/briefing
+    participant Svc as Briefing Orchestrator
     participant HS as Hindsight Bank ('Script')
     participant Groq as Groq (gpt-oss-120b)
+    participant Prov as Provenance Linker
 
     User->>App: Enter upcoming agenda, goal, and click "Generate Briefing"
     App->>API: POST contactId, upcomingAgenda, useMemory=true
-    API->>HS: recall() past commitments, deadlines, objections, and milestones
-    API->>HS: reflect() tactics that led to advanced vs stalled meetings
-    HS-->>API: Recalled Memory Facts (occurredStart, docId) + Tactical Patterns
-    API->>Groq: Prompt with contact metadata + top 10 memory facts + reflect synthesis
-    Groq-->>API: Structured briefing JSON
-    API->>API: Ground provenance: map items to exact meeting dates and documentIds
+    API->>API: Validate payload (400 missing contactId, 404 unknown contact)
+    API->>Svc: Start briefing request
+
+    par Parallel memory retrieval
+        Svc->>HS: recall() past commitments, deadlines, objections, and milestones
+    and
+        Svc->>HS: reflect() tactics that led to advanced vs stalled meetings
+    end
+
+    HS-->>Svc: Recalled Memory Facts (occurredStart, docId) + Tactical Patterns
+    Svc->>Groq: Prompt with contact metadata + top 10 memory facts + reflect synthesis
+    Groq-->>Svc: Structured briefing JSON
+    Svc->>Prov: Map items to exact meeting dates and documentIds
+    Prov-->>Svc: Items with sourceDate and sourceDocumentId
+    Svc-->>API: Grounded briefing
     API-->>App: Full briefing with clickable provenance tags
     App-->>User: Interactive claymorphic briefing ready for executive review
+
+    alt Groq rate limit (429)
+        Svc-->>App: Terracotta alert: wait 10 seconds or Try Without Memory
+        App->>API: POST useMemory=false (lightweight prompt)
+    else Hindsight failure (502)
+        Svc-->>App: Soft brick alert: verify HINDSIGHT_API_KEY
+    end
 ```
 
 ---
